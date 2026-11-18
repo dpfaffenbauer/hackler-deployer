@@ -13,6 +13,14 @@ This repository holds what you need to deploy it: a Helm chart
 
 Operator and machine image always go together in the same version.
 
+The machine image has what Claude's and Codex's cloud environments have, in
+every version either offers (Node 18–24, Python 3.10–3.14, PHP 8.2–8.5,
+Java 11–25, Go, Rust, Ruby, Swift, Erlang/Elixir, PostgreSQL, Redis, Chrome,
+…; `check-tools` in a session lists them). It is **linux/amd64 only and about
+10 GB compressed, 25–30 GB unpacked**: give the nodes that run sandboxes a
+root volume of 100 GB or more. The first sandbox on a new node waits several
+minutes for the pull.
+
 ## Before you start
 
 1. **A location and its token.** In Hackler, open admin → Standorte →
@@ -21,6 +29,7 @@ Operator and machine image always go together in the same version.
 2. **The cluster** needs:
    - outbound access only: the operator and every sandbox connect to the
      Hackler server and pull from `ghcr.io`; nothing connects into the cluster;
+   - amd64 nodes with a root volume of 100 GB or more (the machine image);
    - a default StorageClass for the sandboxes' workspaces (or set one);
    - iptables `nat` with `REDIRECT` and the `owner` match on the nodes (the
      egress guard in every pod);
