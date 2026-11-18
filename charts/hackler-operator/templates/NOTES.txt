@@ -1,0 +1,12 @@
+hackler-operator {{ .Chart.AppVersion }} in {{ .Release.Namespace }}; sandboxes in {{ .Values.sandboxes.namespace }}.
+
+{{- if not .Values.token.value }}
+
+The operator starts once its token Secret exists:
+  kubectl -n {{ .Release.Namespace }} create secret generic {{ .Values.token.secretName }} --from-literal=PROVISIONER_TOKEN=hkp_…
+{{- end }}
+
+Log (shows the location's name, the blocked API server addresses and the Cilium policy):
+  kubectl -n {{ .Release.Namespace }} logs -f deploy/hackler-operator
+
+The location shows as online in the Hackler admin once the operator has polled (within 60 s).

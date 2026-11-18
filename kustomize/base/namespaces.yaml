@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hackler-system
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+---
+# Sandboxes. `privileged` only because the egress-guard init container needs
+# NET_ADMIN for a moment to load the pod's iptables rules; the sandbox
+# container itself runs non-root with every capability dropped.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hackler-sandboxes
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/warn: privileged

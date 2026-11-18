@@ -1,0 +1,32 @@
+# Operator settings (see the README of this repository).
+# PROVISIONER_TOKEN is this location's token (admin → Maschinen → Standorte →
+# Standort hinzufügen; shown once). It lives in the Secret `hackler-operator`
+# (not in git):
+#   kubectl -n hackler-system create secret generic hackler-operator --from-literal=PROVISIONER_TOKEN=hkp_…
+# Name, slots (machines that may run at once) and price are set on the
+# location in the admin, not here.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hackler-operator
+  namespace: hackler-system
+data:
+  HACKLER_SERVER: "https://api.hackler.app"
+  SANDBOX_NAMESPACE: hackler-sandboxes
+  SANDBOX_GUARD_IMAGE: ghcr.io/dpfaffenbauer/hackler-operator:sha-d667a453f413
+  SANDBOX_IMAGE_PULL_POLICY: IfNotPresent
+  # Resolvers of the sandboxes; `cluster` would use the cluster DNS (port 53 only).
+  SANDBOX_DNS: "1.1.1.1,8.8.8.8"
+  # Reachable from every sandbox in allowlist mode (claude; gh through the GitHub App).
+  SANDBOX_EGRESS_ALWAYS: "api.anthropic.com,api.github.com"
+  # Requests = limits × ratio (the environment's cpu/memory are the limits).
+  SANDBOX_REQUEST_RATIO: "0.5"
+  # Extra blocked ranges besides RFC 1918/CGNAT/link-local (public pod or service CIDRs).
+  SANDBOX_BLOCKED_CIDRS: ""
+  # Also create a NetworkPolicy per sandbox (only effective where the CNI enforces them).
+  SANDBOX_NETWORK_POLICY: "on"
+  # Deny policy for the whole sandbox namespace where Cilium is installed:
+  # nodes, API server, pods, private ranges (auto | on | off).
+  SANDBOX_CILIUM_POLICY: auto
+  # The stock sandbox image environments name `hackler-machine`; same version as the operator.
+  SANDBOX_MACHINE_IMAGE: ghcr.io/dpfaffenbauer/hackler-machine:sha-d667a453f413

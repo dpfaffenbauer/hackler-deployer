@@ -1,0 +1,10 @@
+{{- if .Values.sandboxes.createNamespace }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.sandboxes.namespace }}
+  labels:
+    {{- include "hackler.labels" . | nindent 4 }}
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/warn: privileged
+{{- end }}

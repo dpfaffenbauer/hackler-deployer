@@ -1,0 +1,37 @@
+{{- if not .Values.server }}{{ fail "server is required (the Hackler server URL)" }}{{ end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hackler-operator
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "hackler.labels" . | nindent 4 }}
+data:
+  HACKLER_SERVER: {{ .Values.server | quote }}
+  {{- with .Values.machineServer }}
+  HACKLER_MACHINE_SERVER: {{ . | quote }}
+  {{- end }}
+  SANDBOX_NAMESPACE: {{ .Values.sandboxes.namespace | quote }}
+  SANDBOX_SERVICE_ACCOUNT: {{ .Values.sandboxes.serviceAccount | quote }}
+  SANDBOX_GUARD_IMAGE: {{ include "hackler.operatorImage" . | quote }}
+  SANDBOX_MACHINE_IMAGE: {{ include "hackler.machineImage" . | quote }}
+  SANDBOX_IMAGE_PULL_POLICY: {{ .Values.image.pullPolicy | quote }}
+  {{- with .Values.imagePullSecrets }}
+  {{- $names := list }}{{ range . }}{{ $names = append $names .name }}{{ end }}
+  SANDBOX_IMAGE_PULL_SECRETS: {{ join "," $names | quote }}
+  {{- end }}
+  SANDBOX_DNS: {{ .Values.sandboxes.dns | quote }}
+  SANDBOX_EGRESS_ALWAYS: {{ .Values.sandboxes.egressAlways | quote }}
+  SANDBOX_REQUEST_RATIO: {{ .Values.sandboxes.requestRatio | quote }}
+  SANDBOX_BLOCKED_CIDRS: {{ .Values.sandboxes.blockedCidrs | quote }}
+  SANDBOX_NETWORK_POLICY: {{ .Values.sandboxes.networkPolicy | quote }}
+  SANDBOX_CILIUM_POLICY: {{ .Values.sandboxes.ciliumPolicy | quote }}
+  SANDBOX_EGRESS_GUARD: {{ .Values.sandboxes.egressGuard | quote }}
+  {{- with .Values.sandboxes.storageClass }}
+  SANDBOX_STORAGE_CLASS: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.sandboxes.runtimeClass }}
+  SANDBOX_RUNTIME_CLASS: {{ . | quote }}
+  {{- end }}
+  {{- range $k, $v := .Values.extraConfig }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}

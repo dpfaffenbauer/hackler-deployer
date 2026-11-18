@@ -1,0 +1,11 @@
+# Operator, namespaces, RBAC and settings. The operator and the guard sidecar
+# in every sandbox must be the same build, and the machine image the one
+# released with it: one version, three places (operator.yaml and the two
+# images in config.yaml).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespaces.yaml
+  - rbac.yaml
+  - config.yaml
+  - operator.yaml

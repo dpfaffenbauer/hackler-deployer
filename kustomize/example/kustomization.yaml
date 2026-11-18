@@ -1,0 +1,16 @@
+# Your location: reference the base (a local copy or remotely) and change only
+# what you need, for example a storage class or extra blocked ranges.
+#
+#   kubectl apply -k .
+#   kubectl -n hackler-system create secret generic hackler-operator --from-literal=PROVISIONER_TOKEN=hkp_…
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../base
+  # or remotely: - https://github.com/dpfaffenbauer/hackler-deployer//kustomize/base?ref=main
+patches:
+  - target: { kind: ConfigMap, name: hackler-operator }
+    patch: |
+      - op: add
+        path: /data/SANDBOX_STORAGE_CLASS
+        value: sbs-default

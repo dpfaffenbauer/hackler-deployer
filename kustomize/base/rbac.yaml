@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: hackler-operator
+  namespace: hackler-system
+---
+# What sandboxes run as: no permissions, and its token is never mounted.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: hackler-sandbox
+  namespace: hackler-sandboxes
+automountServiceAccountToken: false
+---
+# The operator only acts inside the sandbox namespace.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: hackler-operator
+  namespace: hackler-sandboxes
+rules:
+  - apiGroups: [""]
+    resources: [pods, persistentvolumeclaims, secrets]
+    verbs: [get, list, create, delete]
+  - apiGroups: [""]
+    resources: [pods/log, events]
+    verbs: [get, list]
+  - apiGroups: [networking.k8s.io]
+    resources: [networkpolicies]
+    verbs: [get, list, create, delete]
+  # The deny policy for the whole sandbox namespace (Cilium only; unused elsewhere).
+  - apiGroups: [cilium.io]
+    resources: [ciliumnetworkpolicies]
+    verbs: [get, create, update]
+  - apiGroups: [metrics.k8s.io]
+    resources: [pods]
+    verbs: [get, list]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: hackler-operator
+  namespace: hackler-sandboxes
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: hackler-operator
+subjects:
+  - kind: ServiceAccount
+    name: hackler-operator
+    namespace: hackler-system

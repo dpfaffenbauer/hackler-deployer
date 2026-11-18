@@ -1,0 +1,70 @@
+# hackler-operator: one operator per location. Install into its own namespace
+# (e.g. hackler-system); the sandboxes run in `sandboxes.namespace`.
+
+# The Hackler server, as the operator reaches it.
+server: https://api.hackler.app
+# The server as a sandbox reaches it; empty = `server`.
+machineServer: ""
+
+# This location's token (Hackler admin → Standorte → Standort hinzufügen,
+# kind K8s-Cluster; shown once). Prefer creating the Secret yourself:
+#   kubectl -n <namespace> create secret generic hackler-operator --from-literal=PROVISIONER_TOKEN=hkp_…
+# and leave `value` empty. With a value, the chart creates the Secret.
+token:
+  value: ""
+  secretName: hackler-operator
+
+image:
+  repository: ghcr.io/dpfaffenbauer/hackler-operator
+  # Empty = the chart's appVersion.
+  tag: ""
+  pullPolicy: IfNotPresent
+
+# The stock sandbox image environments name `hackler-machine`.
+machineImage:
+  repository: ghcr.io/dpfaffenbauer/hackler-machine
+  # Empty = the chart's appVersion. Operator and machine image belong together.
+  tag: ""
+
+# Pull secrets for the operator pod and every sandbox (only for private images).
+imagePullSecrets: []
+#  - name: my-registry
+
+sandboxes:
+  namespace: hackler-sandboxes
+  # Create the namespace (PodSecurity `privileged`: the egress guard's init
+  # container needs NET_ADMIN for a moment; the sandbox itself runs non-root
+  # without capabilities).
+  createNamespace: true
+  # Sandboxes run as this ServiceAccount: no permissions, token never mounted.
+  serviceAccount: hackler-sandbox
+  # Resolvers of the sandboxes; `cluster` = the cluster DNS.
+  dns: "1.1.1.1,8.8.8.8"
+  # Reachable from every sandbox in allowlist mode.
+  egressAlways: "api.anthropic.com,api.github.com"
+  # Requests = the environment's cpu/memory × ratio.
+  requestRatio: "0.5"
+  # Extra blocked ranges besides the private ones (e.g. public node addresses on clusters without Cilium).
+  # The API server's public addresses are found and blocked by the operator.
+  blockedCidrs: ""
+  # A NetworkPolicy per sandbox (where the CNI enforces them).
+  networkPolicy: "on"
+  # The CiliumNetworkPolicy that denies nodes, API server, pods and private ranges: auto | on | off.
+  ciliumPolicy: auto
+  # iptables egress guard in every pod; `off` only where NET_ADMIN is not allowed and NetworkPolicies are enforced.
+  egressGuard: "on"
+  storageClass: ""
+  # e.g. gvisor, for a second isolation layer.
+  runtimeClass: ""
+
+# Further operator settings as environment variables (see "Settings" in the README).
+extraConfig: {}
+#  PROVISIONER_POLL_MS: "5000"
+
+resources:
+  requests: { cpu: 20m, memory: 64Mi }
+  limits: { cpu: 500m, memory: 256Mi }
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
