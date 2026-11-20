@@ -21,7 +21,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: operator
-          image: ghcr.io/dpfaffenbauer/hackler-operator:sha-3b97304286df
+          image: ghcr.io/dpfaffenbauer/hackler-operator:sha-4440869d8408
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef: { name: hackler-operator }

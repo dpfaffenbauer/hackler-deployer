@@ -2,9 +2,9 @@ apiVersion: v2
 name: hackler-operator
 description: Runs Hackler cloud sessions as sandbox pods in your cluster (a Hackler location of kind K8s-Cluster).
 type: application
-version: 0.2.0
+version: 0.3.0
 # The hackler-operator and hackler-machine images this chart deploys by default.
-appVersion: "sha-3b97304286df"
+appVersion: "sha-4440869d8408"
 home: https://github.com/dpfaffenbauer/hackler-deployer
 sources:
   - https://github.com/dpfaffenbauer/hackler-deployer
