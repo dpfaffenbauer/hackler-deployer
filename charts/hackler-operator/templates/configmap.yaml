@@ -27,7 +27,6 @@ data:
   SANDBOX_CILIUM_POLICY: {{ .Values.sandboxes.ciliumPolicy | quote }}
   SANDBOX_EGRESS_GUARD: {{ .Values.sandboxes.egressGuard | quote }}
   SANDBOX_PREPULL: {{ .Values.sandboxes.prepull | quote }}
-  SANDBOX_DOCKER: {{ .Values.sandboxes.docker | quote }}
   {{- with .Values.sandboxes.storageClass }}
   SANDBOX_STORAGE_CLASS: {{ . | quote }}
   {{- end }}

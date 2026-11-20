@@ -58,8 +58,6 @@ sandboxes:
   runtimeClass: ""
   # Keep the stock machine image on every amd64 node (a DaemonSet that only sleeps): on | off.
   prepull: "on"
-  # Docker in sandboxes: auto (where pods get a user namespace of their own, hostUsers: false) | on | off.
-  docker: auto
 
 # Further operator settings as environment variables (see "Settings" in the README).
 extraConfig: {}

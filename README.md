@@ -86,7 +86,6 @@ To change settings, copy `kustomize/example` and patch the ConfigMap there.
 | `sandboxes.egressGuard` | `SANDBOX_EGRESS_GUARD` | `on` | `off` only where NET_ADMIN is not allowed and NetworkPolicies are enforced |
 | `sandboxes.storageClass` | `SANDBOX_STORAGE_CLASS` | default class | |
 | `sandboxes.prepull` | `SANDBOX_PREPULL` | `on` | A DaemonSet keeps the machine image on every amd64 node: pulled as soon as a node joins, never garbage-collected, a new version pulled before the old one goes |
-| `sandboxes.docker` | `SANDBOX_DOCKER` | `auto` | Docker in sandboxes (`docker build`, `run`, `compose`): `auto` where a probe pod gets a user namespace of its own (`hostUsers: false`, Kubernetes ≥ 1.33, containerd 2, Linux ≥ 6.3), `on` refuses to start without, `off` |
 | `sandboxes.runtimeClass` | `SANDBOX_RUNTIME_CLASS` | – | e.g. `gvisor`, a second isolation layer |
 | `extraConfig` | any | – | Further variables, e.g. `PROVISIONER_POLL_MS` |
 
@@ -115,9 +114,8 @@ Name, slots and price of the location are set in the Hackler admin, not here.
   denies the nodes (under every address), the API server, all pods and the
   private ranges. A deny wins over every allow, so this holds whatever an
   environment allows.
-- **Docker** (`sandboxes.docker`): the sandbox pod gets a user namespace of
-  its own. Root and capabilities inside it map to an unprivileged host uid;
-  the sandbox never gets `NET_ADMIN`, so the egress guard's rules stay, and
-  containers and builds reach the network only through the proxy.
+- **No Docker in sandboxes.** It would need root in a user namespace of the
+  pod's own, and that root could take the proxy's uid and leave past the
+  egress rules. Tasks that need Docker run on a local machine.
 - Sandboxes share the node's kernel. For untrusted workloads add a sandboxed
   runtime (`sandboxes.runtimeClass`, e.g. gVisor) or dedicated nodes.

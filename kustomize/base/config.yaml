@@ -32,5 +32,3 @@ data:
   SANDBOX_MACHINE_IMAGE: ghcr.io/dpfaffenbauer/hackler-machine:sha-4440869d8408
   # Keep the stock machine image on every amd64 node (a DaemonSet that only sleeps): on | off.
   SANDBOX_PREPULL: "on"
-  # Docker in sandboxes: auto (where pods get a user namespace of their own) | on | off.
-  SANDBOX_DOCKER: auto
