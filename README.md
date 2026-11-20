@@ -85,6 +85,7 @@ To change settings, copy `kustomize/example` and patch the ConfigMap there.
 | `sandboxes.ciliumPolicy` | `SANDBOX_CILIUM_POLICY` | `auto` | The Cilium deny policy: `auto`, `on`, `off` |
 | `sandboxes.egressGuard` | `SANDBOX_EGRESS_GUARD` | `on` | `off` only where NET_ADMIN is not allowed and NetworkPolicies are enforced |
 | `sandboxes.storageClass` | `SANDBOX_STORAGE_CLASS` | default class | |
+| `sandboxes.prepull` | `SANDBOX_PREPULL` | `on` | A DaemonSet keeps the machine image on every amd64 node: pulled as soon as a node joins, never garbage-collected, a new version pulled before the old one goes |
 | `sandboxes.runtimeClass` | `SANDBOX_RUNTIME_CLASS` | – | e.g. `gvisor`, a second isolation layer |
 | `extraConfig` | any | – | Further variables, e.g. `PROVISIONER_POLL_MS` |
 
@@ -95,7 +96,7 @@ Name, slots and price of the location are set in the Hackler admin, not here.
 - **Two namespaces, no cluster-wide rights.** The operator runs in its
   namespace (PodSecurity `restricted`) with a Role in the sandbox namespace
   only: pods, logs, events, PVCs, Secrets, NetworkPolicies,
-  CiliumNetworkPolicies, pod metrics. No ClusterRole, no CRD.
+  CiliumNetworkPolicies, the pre-pull DaemonSet, pod metrics. No ClusterRole, no CRD.
 - **The sandbox pod**: no ServiceAccount token, no service links, seccomp
   `RuntimeDefault`; the sandbox container runs as uid 1000 with every
   capability dropped. The sandbox namespace is `privileged` only because the

@@ -35,6 +35,10 @@ rules:
   - apiGroups: [cilium.io]
     resources: [ciliumnetworkpolicies]
     verbs: [get, create, update]
+  # The pre-pull DaemonSet (the stock machine image on every node).
+  - apiGroups: [apps]
+    resources: [daemonsets]
+    verbs: [get, create, update, delete]
   - apiGroups: [metrics.k8s.io]
     resources: [pods]
     verbs: [get, list]
